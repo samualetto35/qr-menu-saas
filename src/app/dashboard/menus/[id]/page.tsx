@@ -195,13 +195,15 @@ const MenuEditPage: React.FC = () => {
 
   const addItem = (categoryId: string) => {
     if (!menu) return
+    const category = menu.categories.find(cat => cat.id === categoryId)
     const newItem: MenuItem = {
       id: `item_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       name: 'New Item',
       price: 0,
       description: '',
       isAvailable: true,
-      categoryId
+      categoryId,
+      order: category ? category.items.length : 0
     }
     setMenu({
       ...menu,
