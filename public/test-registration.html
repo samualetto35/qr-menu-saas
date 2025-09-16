@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registration Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 500px; margin: 50px auto; padding: 20px; }
+        input, select, button { width: 100%; padding: 10px; margin: 5px 0; }
+        button { background: #0066cc; color: white; border: none; cursor: pointer; }
+        button:hover { background: #0052a3; }
+        .error { color: red; margin: 10px 0; }
+        .success { color: green; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Registration Test</h1>
+    <form id="registrationForm">
+        <input type="text" id="fullName" placeholder="Full Name" value="Samet Yildiz" required>
+        <input type="text" id="businessName" placeholder="Business Name" value="Samet's Restaurant" required>
+        <input type="email" id="email" placeholder="Email" value="samet@example.com" required>
+        <input type="tel" id="phone" placeholder="Phone Number" value="5078951725" required>
+        <input type="password" id="password" placeholder="Password" value="Password123!" required>
+        <input type="password" id="confirmPassword" placeholder="Confirm Password" value="Password123!" required>
+        <button type="submit">Register</button>
+    </form>
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('registrationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Processing...';
+            
+            const formData = {
+                fullName: document.getElementById('fullName').value,
+                businessName: document.getElementById('businessName').value,
+                email: document.getElementById('email').value,
+                phone: '+1' + document.getElementById('phone').value,
+                password: document.getElementById('password').value,
+                confirmPassword: document.getElementById('confirmPassword').value,
+                countryCode: 'US'
+            };
+            
+            console.log('Sending:', formData);
+            
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                console.log('Response:', result);
+                
+                if (result.success) {
+                    resultDiv.innerHTML = '<div class="success">Registration successful! Token: ' + result.token.substring(0, 20) + '...</div>';
+                    localStorage.setItem('authToken', result.token);
+                } else {
+                    resultDiv.innerHTML = '<div class="error">Error: ' + result.message + '</div>';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                resultDiv.innerHTML = '<div class="error">Network error: ' + error.message + '</div>';
+            }
+        });
+    </script>
+</body>
+</html>
