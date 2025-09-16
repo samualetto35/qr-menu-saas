@@ -897,7 +897,7 @@ const MenuEditPage: React.FC = () => {
               </div>
               <div className="p-6">
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {templates.map((template) => (
+                  {colorTemplates.map((template) => (
                     <button
                       key={template.id}
                       onClick={() => handleTemplateChange(template.id)}
