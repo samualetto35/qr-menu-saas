@@ -195,7 +195,7 @@ const MenuEditPage: React.FC = () => {
 
   const addItem = (categoryId: string) => {
     if (!menu) return
-    const newItem: Item = {
+    const newItem: MenuItem = {
       id: `item_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       name: 'New Item',
       price: 0,
