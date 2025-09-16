@@ -102,7 +102,7 @@ const MenuEditPage: React.FC = () => {
         name: template.name,
         colors: { ...template.colors },
         fonts: { ...template.fonts },
-        layout: template.layout
+        layout: template.layout as any
       }
     })
     setShowTemplateModal(false)
