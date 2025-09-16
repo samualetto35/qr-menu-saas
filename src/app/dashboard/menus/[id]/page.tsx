@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import DashboardLayout from '@/components/DashboardLayout'
-import { Menu, Category, MenuItem } from '@/types'
+import { Menu, MenuCategory, MenuItem } from '@/types'
 import { colorTemplates, fontOptions, getColorTemplateById, getFontById, ingredientOptions, categoryOptions } from '@/lib/templates'
 import { ColorTemplate, FontOption } from '@/types'
 import FontLoader from '@/components/FontLoader'
@@ -165,7 +165,7 @@ const MenuEditPage: React.FC = () => {
 
   const addCategory = () => {
     if (!menu) return
-    const newCategory: Category = {
+    const newCategory: MenuCategory = {
       id: `cat_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       name: 'New Category',
       items: [],
@@ -179,7 +179,7 @@ const MenuEditPage: React.FC = () => {
 
   const addCategoryWithName = (categoryName: string) => {
     if (!menu) return
-    const newCategory: Category = {
+    const newCategory: MenuCategory = {
       id: `cat_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       name: categoryName,
       items: [],
