@@ -169,7 +169,8 @@ const MenuEditPage: React.FC = () => {
       id: `cat_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       name: 'New Category',
       items: [],
-      menuId: menu.id
+      menuId: menu.id,
+      order: menu.categories.length
     }
     setMenu({
       ...menu,
@@ -183,7 +184,8 @@ const MenuEditPage: React.FC = () => {
       id: `cat_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       name: categoryName,
       items: [],
-      menuId: menu.id
+      menuId: menu.id,
+      order: menu.categories.length
     }
     setMenu({
       ...menu,
