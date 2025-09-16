@@ -1,18 +1,32 @@
 import QRCode from 'qrcode'
 
+// Check if we should use cloud storage
+function useCloudStorage() {
+  return !!process.env.CLOUDINARY_CLOUD_NAME
+}
+
 // Server-side only imports
 let fs: any = null
 let path: any = null
 let QR_DIR: string = ''
+let uploadQRCode: any = null
 
 if (typeof window === 'undefined') {
   fs = require('fs')
   path = require('path')
   QR_DIR = path.join(process.cwd(), 'public', 'qr-codes')
   
-  // Ensure QR codes directory exists
-  if (!fs.existsSync(QR_DIR)) {
-    fs.mkdirSync(QR_DIR, { recursive: true })
+  // Only setup local storage if not using cloud
+  if (!useCloudStorage()) {
+    // Ensure QR codes directory exists
+    if (!fs.existsSync(QR_DIR)) {
+      fs.mkdirSync(QR_DIR, { recursive: true })
+    }
+  } else {
+    // Import cloud storage function
+    import('./cloudinary').then(module => {
+      uploadQRCode = module.uploadQRCode
+    })
   }
 }
 
@@ -84,10 +98,8 @@ export const generateMenuQRCode = async (
   menuId: string,
   menuName: string
 ): Promise<{ base64: string; fileUrl: string }> => {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3002'
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
   const menuUrl = `${baseUrl}/menu/${menuId}`
-  
-  const filename = `menu-${menuId}-${Date.now()}`
   
   const options: QRCodeOptions = {
     size: 400,
@@ -99,10 +111,28 @@ export const generateMenuQRCode = async (
   }
 
   try {
-    const [base64, fileUrl] = await Promise.all([
-      generateQRCodeBase64(menuUrl, options),
-      generateQRCodeFile(menuUrl, filename, options)
-    ])
+    // Always generate base64 for immediate display
+    const base64 = await generateQRCodeBase64(menuUrl, options)
+    
+    let fileUrl: string
+    
+    if (useCloudStorage()) {
+      // Production: Upload to Cloudinary
+      if (!uploadQRCode) {
+        const cloudinaryModule = await import('./cloudinary')
+        uploadQRCode = cloudinaryModule.uploadQRCode
+      }
+      
+      // Convert base64 to buffer for upload
+      const base64Data = base64.split(',')[1]
+      const buffer = Buffer.from(base64Data, 'base64')
+      
+      fileUrl = await uploadQRCode(buffer, menuId)
+    } else {
+      // Development: Save to local file
+      const filename = `menu-${menuId}-${Date.now()}`
+      fileUrl = await generateQRCodeFile(menuUrl, filename, options)
+    }
 
     return { base64, fileUrl }
   } catch (error) {
