@@ -404,12 +404,32 @@ export async function getMenuAnalytics(menuId: string, userId: string): Promise<
     ipAddress: scan.ip_address || ''
   }))
 
+  // Calculate time-based scans
+  const now = new Date()
+  const today = now.toISOString().split('T')[0]
+  const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString()
+  const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString()
+
+  const scansToday = analytics.filter(scan => 
+    scan.timestamp.startsWith(today)
+  ).length
+
+  const scansThisWeek = analytics.filter(scan => 
+    scan.timestamp >= weekAgo
+  ).length
+
+  const scansThisMonth = analytics.filter(scan => 
+    scan.timestamp >= monthAgo
+  ).length
+
   return {
     id: menuId,
     menuId,
-    userId,
     totalScans,
     uniqueScans,
+    scansToday,
+    scansThisWeek,
+    scansThisMonth,
     scanHistory,
     deviceBreakdown,
     createdAt: new Date().toISOString(),
