@@ -11,30 +11,41 @@ function useSupabase() {
 
 // Helper functions to convert between database and app types
 function convertDatabaseUserToUser(dbUser: DatabaseUser): User {
+  const firstName = dbUser.first_name || ''
+  const lastName = dbUser.last_name || ''
+  const fullName = `${firstName} ${lastName}`.trim() || 'User'
+  
   return {
     id: dbUser.id,
     email: dbUser.email,
     phone: dbUser.phone || '',
     countryCode: dbUser.country_code || '+1',
     businessName: dbUser.business_name || '',
-    firstName: dbUser.first_name || '',
-    lastName: dbUser.last_name || '',
+    fullName,
     isEmailVerified: dbUser.is_email_verified,
     isPhoneVerified: dbUser.is_phone_verified,
     createdAt: dbUser.created_at,
     updatedAt: dbUser.updated_at,
-    lastLoginAt: dbUser.last_login_at
+    lastLoginAt: dbUser.last_login_at,
+    subscriptionStatus: 'trial' as const,
+    subscriptionPlan: 'starter' as const,
+    subscriptionExpiry: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
   }
 }
 
 function convertUserToDatabaseUser(user: Partial<User>): Partial<DatabaseUser> {
+  // Split fullName into first and last name
+  const nameParts = (user.fullName || '').split(' ')
+  const firstName = nameParts[0] || ''
+  const lastName = nameParts.slice(1).join(' ')
+  
   return {
     email: user.email,
     phone: user.phone,
     country_code: user.countryCode,
     business_name: user.businessName,
-    first_name: user.firstName,
-    last_name: user.lastName,
+    first_name: firstName,
+    last_name: lastName,
     is_email_verified: user.isEmailVerified,
     is_phone_verified: user.isPhoneVerified
   }
