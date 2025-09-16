@@ -375,11 +375,17 @@ export async function getMenuAnalytics(menuId: string, userId: string): Promise<
   const totalScans = analytics.length
   const uniqueScans = new Set(analytics.map(a => a.ip_address)).size
   
-  const deviceBreakdown = analytics.reduce((acc, scan) => {
-    const deviceType = scan.device_info?.type || 'unknown'
+  const deviceCounts = analytics.reduce((acc, scan) => {
+    const deviceType = scan.device_info?.type || 'desktop'
     acc[deviceType] = (acc[deviceType] || 0) + 1
     return acc
   }, {} as Record<string, number>)
+
+  const deviceBreakdown = {
+    mobile: deviceCounts.mobile || 0,
+    tablet: deviceCounts.tablet || 0,
+    desktop: deviceCounts.desktop || 0
+  }
 
   // Group by date for chart data
   const scansByDate = analytics.reduce((acc, scan) => {
