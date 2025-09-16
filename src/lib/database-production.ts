@@ -388,16 +388,23 @@ export async function getMenuAnalytics(menuId: string, userId: string): Promise<
     return acc
   }, {} as Record<string, number>)
 
+  // Convert database analytics to ScanRecord format
+  const scanHistory = analytics.map(scan => ({
+    id: scan.id,
+    menuId: scan.menu_id,
+    timestamp: scan.timestamp,
+    deviceType: (scan.device_info?.type || 'desktop') as 'mobile' | 'tablet' | 'desktop',
+    userAgent: scan.user_agent || '',
+    ipAddress: scan.ip_address || ''
+  }))
+
   return {
     id: menuId,
     menuId,
     userId,
     totalScans,
     uniqueScans,
-    scanHistory: Object.entries(scansByDate).map(([date, scans]) => ({
-      date,
-      scans
-    })),
+    scanHistory,
     deviceBreakdown,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
