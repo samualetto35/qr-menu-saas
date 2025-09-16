@@ -52,6 +52,9 @@ function convertUserToDatabaseUser(user: Partial<User>): Partial<DatabaseUser> {
 }
 
 function convertDatabaseMenuToMenu(dbMenu: DatabaseMenu): Menu {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  const url = `${baseUrl}/menu/${dbMenu.id}`
+  
   return {
     id: dbMenu.id,
     userId: dbMenu.user_id,
@@ -62,7 +65,8 @@ function convertDatabaseMenuToMenu(dbMenu: DatabaseMenu): Menu {
     categories: dbMenu.categories || [],
     createdAt: dbMenu.created_at,
     updatedAt: dbMenu.updated_at,
-    qrCode: dbMenu.qr_code_url || ''
+    qrCode: dbMenu.qr_code_url || '',
+    url
   }
 }
 
